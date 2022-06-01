@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         time_string_datetime = datetime_now.replace(hour=hour,
                                                     minute=0,
                                                     second=0).strftime(
-                                                    "%m-%d-%Y, %H:%M:%S %p")
+                                                    "%m-%d-%Y, %I:%M:%S %p")
         return json.dumps({"response": time_string_datetime})
     except KeyError:
         return json.dumps({"response": "needs time_string as request body"})
