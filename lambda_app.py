@@ -10,7 +10,7 @@ def lambda_handler(event, context):
             response = json.loads(event["body"])
             time_string = response["time_string"]
         datetime_now = datetime.now()
-        hour = int(time_string[:-2])
+        hour = datetime.strptime(time_string, '%I%p').hour
         time_string_datetime = datetime_now.replace(hour=hour,
                                                     minute=0,
                                                     second=0).strftime(
