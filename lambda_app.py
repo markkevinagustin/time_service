@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
 
+
 def lambda_handler(event, context):
     try:
         try:
@@ -17,4 +18,3 @@ def lambda_handler(event, context):
         return json.dumps({"response": time_string_datetime})
     except KeyError:
         return json.dumps({"response": "needs time_string as request body"})
-
