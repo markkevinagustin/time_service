@@ -1,19 +1,13 @@
-# start by pulling the python image
-FROM python:3.8-alpine
+FROM public.ecr.aws/lambda/python:3.8
 
-# copy the requirements file into the image
-COPY ./requirements.txt /app/requirements.txt
+# Copy function code
+COPY app.py ${LAMBDA_TASK_ROOT}
 
-# switch working directory
-WORKDIR /app
+# Install the function's dependencies using file requirements.txt
+# from your project folder.
 
-# install the dependencies and packages in the requirements file
-RUN pip install -r requirements.txt
+COPY requirements.txt  .
+RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
-# copy every content from the local file to the image
-COPY . /app
-
-# configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
-
-CMD ["app.py" ]
+# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
+CMD [ "app.time_service" ]

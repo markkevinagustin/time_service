@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, request
 from datetime import datetime
+import json
 import os
 
 app = Flask(__name__)
 
 
 @app.route("/", methods=["POST"])
-def time_service():
+def time_service(event=None, context=None):
     try:
         requests = request.json
         time_string = requests["time_string"]
@@ -19,6 +20,19 @@ def time_service():
         return jsonify(time_string_datetime)
     except KeyError:
         return jsonify("needs time_string as request body")
+
+
+def lambda_handler(event, context):
+    json_region = os.environ['AWS_REGION']
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": json.dumps({
+            "Region ": json_region
+        })
+    }
 
 
 if __name__ == "__main__":
