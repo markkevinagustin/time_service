@@ -1,40 +1,22 @@
-from flask import Flask, jsonify, request
 from datetime import datetime
+import base64
 import json
-import os
-
-app = Flask(__name__)
 
 
-@app.route("/", methods=["POST"])
-def time_service(event=None, context=None):
+def lambda_handler(event, context):
     try:
-        requests = request.json
-        time_string = requests["time_string"]
+        try:
+            time_string = event["time_string"]
+        except KeyError:
+            response = json.loads(base64.b64decode(
+                event["body"]).decode('utf-8'))
+            time_string = response["time_string"]
         datetime_now = datetime.now()
-        hour = int(time_string[0])
+        hour = int(time_string[:-2])
         time_string_datetime = datetime_now.replace(hour=hour,
                                                     minute=0,
                                                     second=0).strftime(
                                                     "%m-%d-%Y, %H:%M:%S %p")
-        return jsonify(time_string_datetime)
+        return json.dumps({"response": time_string_datetime})
     except KeyError:
-        return jsonify("needs time_string as request body")
-
-
-def lambda_handler(event, context):
-    json_region = os.environ['AWS_REGION']
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps({
-            "Region ": json_region
-        })
-    }
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5001))
-    app.run(debug=True, host='0.0.0.0', port=port)
+        return json.dumps({"response": "needs time_string as request body"})
